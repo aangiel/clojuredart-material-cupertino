@@ -1,0 +1,29 @@
+(ns acme.main
+  (:require
+    ["package:flutter/material.dart" :as m]
+    ["package:flutter_platform_widgets/flutter_platform_widgets.dart" :as pw]
+    [cljd.flutter :as f]))
+
+(defn main []
+  (f/run
+    (pw/PlatformProvider
+      .builder
+      (fn [context]
+        (pw/PlatformTheme
+          .themeMode m.ThemeMode/dark
+          .materialLightTheme (.light m/ThemeData)
+          .materialDarkTheme (.dark m/ThemeData)
+          .cupertinoLightTheme (m/MaterialBasedCupertinoThemeData .materialTheme (.light m/ThemeData))
+          .cupertinoDarkTheme (m/MaterialBasedCupertinoThemeData .materialTheme (.dark m/ThemeData))
+          .builder
+          (fn [_]
+            (pw/PlatformApp
+              .title "raz dwa"
+              .home (pw/PlatformScaffold
+                      .appBar (pw/PlatformAppBar
+                                .title (pw/PlatformText (str "App title (" (pw/platform context) ")")))
+                      .body
+                      (f/widget
+                        m/Center
+                        (m/Text "Let's get coding"))))))))))
+
