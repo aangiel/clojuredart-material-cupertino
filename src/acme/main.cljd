@@ -11,38 +11,39 @@
                       :app-title "App title"
                       :app-name  "App name"}))
 
-(defn- app-bar-builder []
-  (fn [context _]
-    (pw/PlatformAppBar
-      .title (m/Text (:app-title @state))
-      .leading (pw/PlatformIconButton
-                 .onPressed (fn ^void []
-                              (.push w/Navigator context
-                                     (pw/platformPageRoute
-                                       .context context
-                                       .builder (fn [_] (m/Drawer
-                                                  .child (w/ListView
-                                                           .padding w.EdgeInsets/zero
-                                                           .children [(m/DrawerHeader
-                                                                        .child (w/Text "adf" .style (w/TextStyle .color (d/Color 0xF0F9F9F9))))
-                                                                      (m/ListTile .title (w/Text "first"))])))))
-                              ;;(pw/showPlatformDialog
-                              ;;  .context context
-                              ;;  .builder (fn [_] (pw/PlatformAlertDialog .title (w/Text "Alert dd"))))
-                              nil)
-                 .materialIcon (-> context pw/PlatformIcons .-home w/Icon)
-                 .cupertinoIcon (-> context pw/PlatformIcons .-home w/Icon)))))
+(defn- ^w/Widget drawer-builder [_]
+  (m/Drawer
+    .child
+    (w/ListView
+      .padding w.EdgeInsets/zero
+      .children [(m/DrawerHeader
+                   .child (w/Text "adf" .style (w/TextStyle .color (d/Color 0xF0F9F9F9))))
+                 (m/ListTile .title (w/Text "first"))])))
 
-(defn- body-builder []
-  (fn [_ _]
-    (f/widget
-      m/Center
-      (m/DataTable
-        .columns [(m/DataColumn .label (w/Text "First"))
-                  (m/DataColumn .label (w/Text "Second"))]
-        .rows [(m/DataRow
-                 .cells [(m/DataCell (w/Text "Cell 1"))
-                         (m/DataCell (w/Text "Cell 2"))])]))))
+(defn- ^pw/PlatformAppBar app-bar-builder
+  [context _]
+  (pw/PlatformAppBar
+    .title (m/Text (:app-title @state))
+    .leading (pw/PlatformIconButton
+               .onPressed (fn ^void []
+                            (.push w/Navigator context
+                                   (pw/platformPageRoute
+                                     .context context
+                                     .builder drawer-builder))
+                            nil)
+               .materialIcon (-> context pw/PlatformIcons .-home w/Icon)
+               .cupertinoIcon (-> context pw/PlatformIcons .-home w/Icon))))
+
+(defn- ^w/Widget body-builder
+  [_ _]
+  (f/widget
+    m/Center
+    (m/DataTable
+      .columns [(m/DataColumn .label (w/Text "First"))
+                (m/DataColumn .label (w/Text "Second"))]
+      .rows [(m/DataRow
+               .cells [(m/DataCell (w/Text "Cell 1"))
+                       (m/DataCell (w/Text "Cell 2"))])])))
 
 (defn- navigation-bar-items [context]
   [(w/BottomNavigationBarItem
@@ -54,7 +55,7 @@
 
 (def ^:private darkDefaultCupertinoTheme (c/CupertinoThemeData .brightness d.Brightness/dark))
 
-(defn- cupertino-dark-theme []
+(def ^:private cupertino-dark-theme
   (m/MaterialBasedCupertinoThemeData
     .materialTheme
     (.copyWith (.dark m/ThemeData)
@@ -76,8 +77,8 @@
   (pw/PlatformTabScaffold
     .tabController (pw/PlatformTabController)
     .items (navigation-bar-items context)
-    .appBarBuilder (app-bar-builder)
-    .bodyBuilder (body-builder)))
+    .appBarBuilder app-bar-builder
+    .bodyBuilder body-builder))
 
 (defn main []
   (f/run
@@ -89,7 +90,7 @@
           .materialLightTheme (-> m/ThemeData .light)
           .materialDarkTheme (-> m/ThemeData .dark)
           .cupertinoLightTheme (m/MaterialBasedCupertinoThemeData .materialTheme (-> m/ThemeData .light))
-          .cupertinoDarkTheme (cupertino-dark-theme)
+          .cupertinoDarkTheme cupertino-dark-theme
           .builder
           (fn [theme-context]
             (pw/PlatformApp
