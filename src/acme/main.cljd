@@ -7,12 +7,14 @@
     ["package:flutter_platform_widgets/flutter_platform_widgets.dart" :as pw]
     [cljd.flutter :as f]))
 
-(defonce state (atom {:theme m.ThemeMode/dark}))
+(defonce state (atom {:theme m.ThemeMode/dark
+                      :app-title "App title"
+                      :app-name "App name"}))
 
 (defn- app-bar-builder []
   (fn [context _]
     (pw/PlatformAppBar
-      .title (m/Text (str "App title (" (pw/platform context) ")"))
+      .title (m/Text (:app-title @state))
       .leading (pw/PlatformIconButton
                  .onPressed (fn ^void []
                               (pw/showPlatformDialog
@@ -79,7 +81,7 @@
           .builder
           (fn [theme-context]
             (pw/PlatformApp
-              .title "raz dwa"
+              .title (:app-name @state)
               .localizationsDelegates [m.DefaultMaterialLocalizations/delegate
                                        m.DefaultWidgetsLocalizations/delegate
                                        c.DefaultCupertinoLocalizations/delegate]
