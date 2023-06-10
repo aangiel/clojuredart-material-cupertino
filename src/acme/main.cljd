@@ -17,11 +17,11 @@
     (w/ListView
       .padding w.EdgeInsets/zero
       .children [(m/DrawerHeader
-                   .child (pw/PlatformIconButton
-                            .icon (-> context pw/PlatformIcons .-back w/Icon)
-                            .onPressed (fn ^void []
-                                         (.pop w/Navigator context)
-                                         nil)))
+                   .child (f/widget (pw/PlatformIconButton
+                                      .icon (-> context pw/PlatformIcons .-back w/Icon)
+                                      .onPressed (fn ^void []
+                                                   (.pop w/Navigator context)
+                                                   nil))))
                  (m/ListTile .title (w/Text "first"))])))
 
 (defn- ^pw/PlatformAppBar app-bar-builder
@@ -38,8 +38,7 @@
                                            .context context
                                            .builder drawer-builder))
                                   nil)
-                     .materialIcon (-> context pw/PlatformIcons .-home w/Icon)
-                     .cupertinoIcon (-> context pw/PlatformIcons .-home w/Icon))))))
+                     .cupertinoIcon (-> context pw/PlatformIcons .-dehaze w/Icon))))))
 
 (defn- ^w/Widget body-builder
   [_ _]
