@@ -7,17 +7,21 @@
     ["package:flutter_platform_widgets/flutter_platform_widgets.dart" :as pw]
     [cljd.flutter :as f]))
 
-(defonce state (atom {:theme     m.ThemeMode/dark
-                      :app-title "App title"
-                      :app-name  "App name"}))
+(def state (atom {:theme     m.ThemeMode/dark
+                  :app-title "App title"
+                  :app-name  "App name"}))
 
-(defn- ^w/Widget drawer-builder [_]
+(defn- ^w/Widget drawer-builder [context]
   (m/Drawer
     .child
     (w/ListView
       .padding w.EdgeInsets/zero
       .children [(m/DrawerHeader
-                   .child (w/Text "adf" .style (w/TextStyle .color (d/Color 0xF0F9F9F9))))
+                   .child (pw/PlatformIconButton
+                            .icon (-> context pw/PlatformIcons .-back w/Icon)
+                            .onPressed (fn ^void []
+                                         (.pop w/Navigator context)
+                                         nil)))
                  (m/ListTile .title (w/Text "first"))])))
 
 (defn- ^pw/PlatformAppBar app-bar-builder
@@ -81,7 +85,7 @@
     .material (fn [context _] (pw/MaterialTabScaffoldData
                                 .drawer (drawer-builder context)
                                 .floatingActionButton (pw/PlatformIconButton
-                                                        .icon (-> context pw/PlatformIcons .-add w/Icon))))
+                                                        .icon (-> context pw/PlatformIcons .-addCircled w/Icon))))
     .tabController (pw/PlatformTabController)
     .items (navigation-bar-items context)
     .appBarBuilder app-bar-builder
