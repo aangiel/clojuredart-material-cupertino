@@ -7,9 +7,9 @@
     ["package:flutter_platform_widgets/flutter_platform_widgets.dart" :as pw]
     [cljd.flutter :as f]))
 
-(defonce state (atom {:theme m.ThemeMode/dark
+(defonce state (atom {:theme     m.ThemeMode/dark
                       :app-title "App title"
-                      :app-name "App name"}))
+                      :app-name  "App name"}))
 
 (defn- app-bar-builder []
   (fn [context _]
@@ -56,9 +56,12 @@
                  .textTheme
                  (c/CupertinoTextThemeData
                    .navActionTextStyle
-                   (-> darkDefaultCupertinoTheme .-textTheme .-navActionTextStyle (.copyWith .color (d/Color 0xF0F9F9F9)))
+                   (-> darkDefaultCupertinoTheme .-textTheme .-navActionTextStyle
+                       (.copyWith .color (d/Color 0xF0F9F9F9)))
+
                    .navLargeTitleTextStyle
-                   (-> darkDefaultCupertinoTheme .-textTheme .-navLargeTitleTextStyle (.copyWith .color (d/Color 0xF0F9F9F9))))))))
+                   (-> darkDefaultCupertinoTheme .-textTheme .-navLargeTitleTextStyle
+                       (.copyWith .color (d/Color 0xF0F9F9F9))))))))
 
 (defn- home [context]
   (pw/PlatformTabScaffold
