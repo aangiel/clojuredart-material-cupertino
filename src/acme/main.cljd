@@ -17,9 +17,18 @@
       .title (m/Text (:app-title @state))
       .leading (pw/PlatformIconButton
                  .onPressed (fn ^void []
-                              (pw/showPlatformDialog
-                                .context context
-                                .builder (fn [_] (pw/PlatformAlertDialog .title (w/Text "Alert dd"))))
+                              (.push w/Navigator context
+                                     (pw/platformPageRoute
+                                       .context context
+                                       .builder (fn [_] (m/Drawer
+                                                  .child (w/ListView
+                                                           .padding w.EdgeInsets/zero
+                                                           .children [(m/DrawerHeader
+                                                                        .child (w/Text "adf" .style (w/TextStyle .color (d/Color 0xF0F9F9F9))))
+                                                                      (m/ListTile .title (w/Text "first"))])))))
+                              ;;(pw/showPlatformDialog
+                              ;;  .context context
+                              ;;  .builder (fn [_] (pw/PlatformAlertDialog .title (w/Text "Alert dd"))))
                               nil)
                  .materialIcon (-> context pw/PlatformIcons .-home w/Icon)
                  .cupertinoIcon (-> context pw/PlatformIcons .-home w/Icon)))))
