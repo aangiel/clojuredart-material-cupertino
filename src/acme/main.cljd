@@ -16,23 +16,23 @@
       (fn [_]
         (pw/PlatformTheme
           .themeMode m.ThemeMode/dark
-          .materialLightTheme (.light m/ThemeData)
-          .materialDarkTheme (.dark m/ThemeData)
-          .cupertinoLightTheme (m/MaterialBasedCupertinoThemeData .materialTheme (.light m/ThemeData))
-          .cupertinoDarkTheme (m/MaterialBasedCupertinoThemeData
-                                .materialTheme (.copyWith (.dark m/ThemeData)
-                                                          .cupertinoOverrideTheme (c/CupertinoThemeData
-                                                                                    .brightness d.Brightness/dark
-                                                                                    .barBackgroundColor (.-barBackgroundColor darkDefaultCupertinoTheme)
-                                                                                    .textTheme (c/CupertinoTextThemeData
-                                                                                                 .navActionTextStyle
-                                                                                                 (.copyWith
-                                                                                                   (.-navActionTextStyle (.-textTheme darkDefaultCupertinoTheme))
-                                                                                                   .color (d/Color 0xF0F9F9F9))
-                                                                                                 .navLargeTitleTextStyle
-                                                                                                 (.copyWith
-                                                                                                   (.-navLargeTitleTextStyle (.-textTheme darkDefaultCupertinoTheme))
-                                                                                                   .color (d/Color 0xF0F9F9F9))))))
+          .materialLightTheme (-> m/ThemeData .light)
+          .materialDarkTheme (-> m/ThemeData .dark)
+          .cupertinoLightTheme (m/MaterialBasedCupertinoThemeData .materialTheme (-> m/ThemeData .light))
+          .cupertinoDarkTheme
+          (m/MaterialBasedCupertinoThemeData
+            .materialTheme
+            (.copyWith (.dark m/ThemeData)
+                       .cupertinoOverrideTheme
+                       (c/CupertinoThemeData
+                         .brightness d.Brightness/dark
+                         .barBackgroundColor (.-barBackgroundColor darkDefaultCupertinoTheme)
+                         .textTheme
+                         (c/CupertinoTextThemeData
+                           .navActionTextStyle
+                           (-> darkDefaultCupertinoTheme .-textTheme .-navActionTextStyle (.copyWith .color (d/Color 0xF0F9F9F9)))
+                           .navLargeTitleTextStyle
+                           (-> darkDefaultCupertinoTheme .-textTheme .-navLargeTitleTextStyle (.copyWith .color (d/Color 0xF0F9F9F9)))))))
           .builder
           (fn [theme-context]
             (pw/PlatformApp
@@ -45,10 +45,10 @@
                 .tabController (pw/PlatformTabController)
                 .items [(w/BottomNavigationBarItem
                           .label "Info"
-                          .icon (w/Icon (.-info (pw/PlatformIcons theme-context))))
+                          .icon (-> theme-context pw/PlatformIcons .-info w/Icon))
                         (w/BottomNavigationBarItem
                           .label "Error"
-                          .icon (w/Icon (.-error (pw/PlatformIcons theme-context))))]
+                          .icon (-> theme-context pw/PlatformIcons .-error w/Icon))]
                 .appBarBuilder
                 (fn [context _]
                   (pw/PlatformAppBar
@@ -59,8 +59,8 @@
                                               .context context
                                               .builder (fn [_] (pw/PlatformAlertDialog .title (w/Text "Alert dd"))))
                                             nil)
-                               .materialIcon (w/Icon (.-home (pw/PlatformIcons theme-context)))
-                               .cupertinoIcon (w/Icon (.-home (pw/PlatformIcons theme-context))))))
+                               .materialIcon (-> theme-context pw/PlatformIcons .-home w/Icon)
+                               .cupertinoIcon (-> theme-context pw/PlatformIcons .-home w/Icon))))
                 .bodyBuilder
                 (fn [_ _]
                   (f/widget
