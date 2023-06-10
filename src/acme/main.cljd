@@ -24,15 +24,18 @@
   [context _]
   (pw/PlatformAppBar
     .title (m/Text (:app-title @state))
-    .leading (pw/PlatformIconButton
-               .onPressed (fn ^void []
-                            (.push w/Navigator context
-                                   (pw/platformPageRoute
-                                     .context context
-                                     .builder drawer-builder))
-                            nil)
-               .materialIcon (-> context pw/PlatformIcons .-home w/Icon)
-               .cupertinoIcon (-> context pw/PlatformIcons .-home w/Icon))))
+    .cupertino (fn [_ __]
+                 (pw/CupertinoNavigationBarData
+                   .leading
+                   (pw/PlatformIconButton
+                     .onPressed (fn ^void []
+                                  (.push w/Navigator context
+                                         (pw/platformPageRoute
+                                           .context context
+                                           .builder drawer-builder))
+                                  nil)
+                     .materialIcon (-> context pw/PlatformIcons .-home w/Icon)
+                     .cupertinoIcon (-> context pw/PlatformIcons .-home w/Icon))))))
 
 (defn- ^w/Widget body-builder
   [_ _]
@@ -75,6 +78,10 @@
 
 (defn- home [context]
   (pw/PlatformTabScaffold
+    .material (fn [context _] (pw/MaterialTabScaffoldData
+                                .drawer (drawer-builder context)
+                                .floatingActionButton (pw/PlatformIconButton
+                                                        .icon (-> context pw/PlatformIcons .-add w/Icon))))
     .tabController (pw/PlatformTabController)
     .items (navigation-bar-items context)
     .appBarBuilder app-bar-builder
