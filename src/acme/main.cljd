@@ -1,7 +1,6 @@
 (ns acme.main
   (:require
     ["package:flutter/material.dart" :as m]
-    ["package:flutter/cupertino.dart" :as c]
     ["package:flutter/widgets.dart" :as w]
     ["package:flutter_platform_widgets/flutter_platform_widgets.dart" :as pw]
     [cljd.flutter :as f]))
@@ -10,7 +9,7 @@
   (f/run
     (pw/PlatformProvider
       .builder
-      (fn [provider-context]
+      (fn [_]
         (pw/PlatformTheme
           .themeMode m.ThemeMode/light
           .materialLightTheme (.light m/ThemeData)
@@ -34,26 +33,25 @@
                           .label "Error"
                           .icon (w/Icon (.-error (pw/PlatformIcons theme-context))))]
                 .appBarBuilder
-                (fn [context index] (pw/PlatformAppBar
-                                .title (m/Text (str "App title (" (pw/platform context) ")"))
-                                .leading (pw/PlatformIconButton
-                                           .onPressed (fn ^void []
-                                                        (pw/showPlatformDialog
-                                                          .context context
-                                                          .builder
-                                                          (fn [_]
-                                                            (pw/PlatformAlertDialog
-                                                              .title (w/Text "Alert dd"))))
-                                                        nil)
-                                           .materialIcon (w/Icon (.-home (pw/PlatformIcons theme-context)))
-                                           .cupertinoIcon (w/Icon (.-home (pw/PlatformIcons theme-context))))))
+                (fn [context _]
+                  (pw/PlatformAppBar
+                    .title (m/Text (str "App title (" (pw/platform context) ")"))
+                    .leading (pw/PlatformIconButton
+                               .onPressed (fn ^void []
+                                            (pw/showPlatformDialog
+                                              .context context
+                                              .builder (fn [_] (pw/PlatformAlertDialog .title (w/Text "Alert dd"))))
+                                            nil)
+                               .materialIcon (w/Icon (.-home (pw/PlatformIcons theme-context)))
+                               .cupertinoIcon (w/Icon (.-home (pw/PlatformIcons theme-context))))))
                 .bodyBuilder
-                (fn [context index] (f/widget
-                                      m/Center
-                                      (m/DataTable
-                                        .columns [(m/DataColumn .label (w/Text "First"))
-                                                  (m/DataColumn .label (w/Text "Second"))]
-                                        .rows [(m/DataRow
-                                                 .cells [(m/DataCell (w/Text "Cell 1"))
-                                                         (m/DataCell (w/Text "Cell 2"))])])))))))))))
+                (fn [_ _]
+                  (f/widget
+                    m/Center
+                    (m/DataTable
+                      .columns [(m/DataColumn .label (w/Text "First"))
+                                (m/DataColumn .label (w/Text "Second"))]
+                      .rows [(m/DataRow
+                               .cells [(m/DataCell (w/Text "Cell 1"))
+                                       (m/DataCell (w/Text "Cell 2"))])])))))))))))
 
