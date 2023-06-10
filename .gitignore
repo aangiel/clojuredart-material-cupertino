@@ -1,11 +1,5 @@
 .clj-kondo
-ios
 .clojuredart
-windows
-macos
-linux
-android
-web
 .lsp
 
 

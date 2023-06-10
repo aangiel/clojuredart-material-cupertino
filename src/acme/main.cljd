@@ -27,8 +27,12 @@
               .home
               (pw/PlatformTabScaffold
                 .tabController (pw/PlatformTabController)
-                .items [(w/BottomNavigationBarItem .label "Info" .icon (w/Icon (.-info (pw/PlatformIcons theme-context))))
-                        (w/BottomNavigationBarItem .label "Error" .icon (w/Icon (.-error (pw/PlatformIcons theme-context))))]
+                .items [(w/BottomNavigationBarItem
+                          .label "Info"
+                          .icon (w/Icon (.-info (pw/PlatformIcons theme-context))))
+                        (w/BottomNavigationBarItem
+                          .label "Error"
+                          .icon (w/Icon (.-error (pw/PlatformIcons theme-context))))]
                 .appBarBuilder
                 (fn [context index] (pw/PlatformAppBar
                                 .title (m/Text (str "App title (" (pw/platform context) ")"))
