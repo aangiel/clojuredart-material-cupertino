@@ -1,9 +1,13 @@
 (ns acme.main
   (:require
     ["package:flutter/material.dart" :as m]
+    ["package:flutter/cupertino.dart" :as c]
     ["package:flutter/widgets.dart" :as w]
+    ["dart:ui" :as d]
     ["package:flutter_platform_widgets/flutter_platform_widgets.dart" :as pw]
     [cljd.flutter :as f]))
+
+(def darkDefaultCupertinoTheme (c/CupertinoThemeData .brightness d.Brightness/dark))
 
 (defn main []
   (f/run
@@ -11,11 +15,24 @@
       .builder
       (fn [_]
         (pw/PlatformTheme
-          .themeMode m.ThemeMode/light
+          .themeMode m.ThemeMode/dark
           .materialLightTheme (.light m/ThemeData)
           .materialDarkTheme (.dark m/ThemeData)
           .cupertinoLightTheme (m/MaterialBasedCupertinoThemeData .materialTheme (.light m/ThemeData))
-          .cupertinoDarkTheme (m/MaterialBasedCupertinoThemeData .materialTheme (.dark m/ThemeData))
+          .cupertinoDarkTheme (m/MaterialBasedCupertinoThemeData
+                                .materialTheme (.copyWith (.dark m/ThemeData)
+                                                          .cupertinoOverrideTheme (c/CupertinoThemeData
+                                                                                    .brightness d.Brightness/dark
+                                                                                    .barBackgroundColor (.-barBackgroundColor darkDefaultCupertinoTheme)
+                                                                                    .textTheme (c/CupertinoTextThemeData
+                                                                                                 .navActionTextStyle
+                                                                                                 (.copyWith
+                                                                                                   (.-navActionTextStyle (.-textTheme darkDefaultCupertinoTheme))
+                                                                                                   .color (d/Color 0xF0F9F9F9))
+                                                                                                 .navLargeTitleTextStyle
+                                                                                                 (.copyWith
+                                                                                                   (.-navLargeTitleTextStyle (.-textTheme darkDefaultCupertinoTheme))
+                                                                                                   .color (d/Color 0xF0F9F9F9))))))
           .builder
           (fn [theme-context]
             (pw/PlatformApp
