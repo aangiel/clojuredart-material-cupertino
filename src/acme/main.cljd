@@ -7,7 +7,54 @@
     ["package:flutter_platform_widgets/flutter_platform_widgets.dart" :as pw]
     [cljd.flutter :as f]))
 
-(def darkDefaultCupertinoTheme (c/CupertinoThemeData .brightness d.Brightness/dark))
+(def ^:private darkDefaultCupertinoTheme (c/CupertinoThemeData .brightness d.Brightness/dark))
+
+(defn- cupertino-dark-theme []
+  (m/MaterialBasedCupertinoThemeData
+    .materialTheme
+    (.copyWith (.dark m/ThemeData)
+               .cupertinoOverrideTheme
+               (c/CupertinoThemeData
+                 .brightness d.Brightness/dark
+                 .barBackgroundColor (.-barBackgroundColor darkDefaultCupertinoTheme)
+                 .textTheme
+                 (c/CupertinoTextThemeData
+                   .navActionTextStyle
+                   (-> darkDefaultCupertinoTheme .-textTheme .-navActionTextStyle (.copyWith .color (d/Color 0xF0F9F9F9)))
+                   .navLargeTitleTextStyle
+                   (-> darkDefaultCupertinoTheme .-textTheme .-navLargeTitleTextStyle (.copyWith .color (d/Color 0xF0F9F9F9))))))))
+
+(defn- home [context]
+  (pw/PlatformTabScaffold
+    .tabController (pw/PlatformTabController)
+    .items [(w/BottomNavigationBarItem
+              .label "Info"
+              .icon (-> context pw/PlatformIcons .-info w/Icon))
+            (w/BottomNavigationBarItem
+              .label "Error"
+              .icon (-> context pw/PlatformIcons .-error w/Icon))]
+    .appBarBuilder
+    (fn [context _]
+      (pw/PlatformAppBar
+        .title (m/Text (str "App title (" (pw/platform context) ")"))
+        .leading (pw/PlatformIconButton
+                   .onPressed (fn ^void []
+                                (pw/showPlatformDialog
+                                  .context context
+                                  .builder (fn [_] (pw/PlatformAlertDialog .title (w/Text "Alert dd"))))
+                                nil)
+                   .materialIcon (-> context pw/PlatformIcons .-home w/Icon)
+                   .cupertinoIcon (-> context pw/PlatformIcons .-home w/Icon))))
+    .bodyBuilder
+    (fn [_ _]
+      (f/widget
+        m/Center
+        (m/DataTable
+          .columns [(m/DataColumn .label (w/Text "First"))
+                    (m/DataColumn .label (w/Text "Second"))]
+          .rows [(m/DataRow
+                   .cells [(m/DataCell (w/Text "Cell 1"))
+                           (m/DataCell (w/Text "Cell 2"))])])))))
 
 (defn main []
   (f/run
@@ -19,20 +66,7 @@
           .materialLightTheme (-> m/ThemeData .light)
           .materialDarkTheme (-> m/ThemeData .dark)
           .cupertinoLightTheme (m/MaterialBasedCupertinoThemeData .materialTheme (-> m/ThemeData .light))
-          .cupertinoDarkTheme
-          (m/MaterialBasedCupertinoThemeData
-            .materialTheme
-            (.copyWith (.dark m/ThemeData)
-                       .cupertinoOverrideTheme
-                       (c/CupertinoThemeData
-                         .brightness d.Brightness/dark
-                         .barBackgroundColor (.-barBackgroundColor darkDefaultCupertinoTheme)
-                         .textTheme
-                         (c/CupertinoTextThemeData
-                           .navActionTextStyle
-                           (-> darkDefaultCupertinoTheme .-textTheme .-navActionTextStyle (.copyWith .color (d/Color 0xF0F9F9F9)))
-                           .navLargeTitleTextStyle
-                           (-> darkDefaultCupertinoTheme .-textTheme .-navLargeTitleTextStyle (.copyWith .color (d/Color 0xF0F9F9F9)))))))
+          .cupertinoDarkTheme (cupertino-dark-theme)
           .builder
           (fn [theme-context]
             (pw/PlatformApp
@@ -40,35 +74,5 @@
               .localizationsDelegates [m.DefaultMaterialLocalizations/delegate
                                        m.DefaultWidgetsLocalizations/delegate
                                        c.DefaultCupertinoLocalizations/delegate]
-              .home
-              (pw/PlatformTabScaffold
-                .tabController (pw/PlatformTabController)
-                .items [(w/BottomNavigationBarItem
-                          .label "Info"
-                          .icon (-> theme-context pw/PlatformIcons .-info w/Icon))
-                        (w/BottomNavigationBarItem
-                          .label "Error"
-                          .icon (-> theme-context pw/PlatformIcons .-error w/Icon))]
-                .appBarBuilder
-                (fn [context _]
-                  (pw/PlatformAppBar
-                    .title (m/Text (str "App title (" (pw/platform context) ")"))
-                    .leading (pw/PlatformIconButton
-                               .onPressed (fn ^void []
-                                            (pw/showPlatformDialog
-                                              .context context
-                                              .builder (fn [_] (pw/PlatformAlertDialog .title (w/Text "Alert dd"))))
-                                            nil)
-                               .materialIcon (-> theme-context pw/PlatformIcons .-home w/Icon)
-                               .cupertinoIcon (-> theme-context pw/PlatformIcons .-home w/Icon))))
-                .bodyBuilder
-                (fn [_ _]
-                  (f/widget
-                    m/Center
-                    (m/DataTable
-                      .columns [(m/DataColumn .label (w/Text "First"))
-                                (m/DataColumn .label (w/Text "Second"))]
-                      .rows [(m/DataRow
-                               .cells [(m/DataCell (w/Text "Cell 1"))
-                                       (m/DataCell (w/Text "Cell 2"))])])))))))))))
+              .home (home theme-context))))))))
 
