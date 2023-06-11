@@ -7,9 +7,9 @@
     ["package:flutter_platform_widgets/flutter_platform_widgets.dart" :as pw]
     [cljd.flutter :as f]))
 
-(def state (atom {:theme     m.ThemeMode/dark
-                  :app-title "App title"
-                  :app-name  "App name"}))
+(defonce state (atom {:theme     m.ThemeMode/dark
+                      :app-title "App title"
+                      :app-name  "App name"}))
 
 (defn- ^w/Widget drawer-builder [context]
   (m/Drawer
@@ -107,6 +107,7 @@
           .materialDarkTheme (-> m/ThemeData .dark)
           .cupertinoLightTheme (m/MaterialBasedCupertinoThemeData .materialTheme (-> m/ThemeData .light))
           .cupertinoDarkTheme cupertino-dark-theme
+          .onThemeModeChanged (fn [theme] (swap! state assoc :theme theme))
           .builder
           (fn [theme-context]
             (pw/PlatformApp
