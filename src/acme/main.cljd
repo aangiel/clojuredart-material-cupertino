@@ -22,7 +22,13 @@
                                       .onPressed (fn ^void []
                                                    (.pop w/Navigator context)
                                                    nil))))
-                 (m/ListTile .title (w/Text "first"))])))
+                 (m/ListTile
+                   .leading (f/widget
+                              :let [^pw/PlatformThemeState platform-theme-state (.of pw/PlatformTheme context)]
+                              (pw/PlatformSwitch
+                                .value (if (= m.ThemeMode/dark (.-themeMode platform-theme-state)) true false)
+                                .onChanged (fn [value?] (.-themeMode! platform-theme-state (if value? m.ThemeMode/dark m.ThemeMode/light)) nil)))
+                   .title (w/Text "Dark mode?"))])))
 
 (defn- ^pw/PlatformAppBar app-bar-builder
   [context _]
