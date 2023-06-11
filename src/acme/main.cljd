@@ -27,14 +27,21 @@
                               :let [^pw/PlatformThemeState platform-theme-state (.of pw/PlatformTheme context)]
                               (pw/PlatformSwitch
                                 .value (.isDark platform-theme-state)
-                                .onChanged (fn [value?] (.-themeMode! platform-theme-state (if value? m.ThemeMode/dark m.ThemeMode/light)) nil)))
+                                .onChanged (fn [value?] (.-themeMode!
+                                                          platform-theme-state
+                                                          (if value? m.ThemeMode/dark m.ThemeMode/light))
+                                             nil)))
                    .title (w/Text "Dark mode?"))
                  (m/ListTile
                    .leading (f/widget
                               :let [^pw/PlatformProviderState platform-provider (.of pw/PlatformProvider context)]
                               (pw/PlatformSwitch
                                 .value (pw/isMaterial context)
-                                .onChanged (fn [value?] (if value? (.changeToMaterialPlatform platform-provider) (.changeToCupertinoPlatform platform-provider)) nil)))
+                                .onChanged (fn [value?]
+                                             (if value?
+                                               (.changeToMaterialPlatform platform-provider)
+                                               (.changeToCupertinoPlatform platform-provider))
+                                             nil)))
                    .title (w/Text "Material Design?"))])))
 
 (defn- ^pw/PlatformAppBar app-bar-builder
