@@ -7,9 +7,9 @@
     ["package:flutter_platform_widgets/flutter_platform_widgets.dart" :as pw]
     [cljd.flutter :as f]))
 
-(defonce state (atom {:theme     m.ThemeMode/dark
-                      :app-title "App title"
-                      :app-name  "App name"}))
+(defonce state (atom {:app-title  "App title"
+                      :app-name   "App name"
+                      :dark-mode? true}))
 
 (defn- ^w/Widget drawer-builder [context]
   (m/Drawer
@@ -26,7 +26,7 @@
                    .leading (f/widget
                               :let [^pw/PlatformThemeState platform-theme-state (.of pw/PlatformTheme context)]
                               (pw/PlatformSwitch
-                                .value (if (= m.ThemeMode/dark (.-themeMode platform-theme-state)) true false)
+                                .value (:dark-mode? @state)
                                 .onChanged (fn [value?] (.-themeMode! platform-theme-state (if value? m.ThemeMode/dark m.ThemeMode/light)) nil)))
                    .title (w/Text "Dark mode?"))])))
 
@@ -102,12 +102,12 @@
       .builder
       (fn [_]
         (pw/PlatformTheme
-          .themeMode (:theme @state)
+          .themeMode (if (:dark-mode? @state) m.ThemeMode/dark m.ThemeMode/light)
           .materialLightTheme (-> m/ThemeData .light)
           .materialDarkTheme (-> m/ThemeData .dark)
           .cupertinoLightTheme (m/MaterialBasedCupertinoThemeData .materialTheme (-> m/ThemeData .light))
           .cupertinoDarkTheme cupertino-dark-theme
-          .onThemeModeChanged (fn [theme] (swap! state assoc :theme theme))
+          .onThemeModeChanged (fn [theme] (swap! state assoc :dark-mode? (if (= m.ThemeMode/dark theme) true false)))
           .builder
           (fn [theme-context]
             (pw/PlatformApp
