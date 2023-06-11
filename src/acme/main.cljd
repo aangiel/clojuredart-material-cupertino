@@ -12,16 +12,16 @@
                       :dark-mode? true}))
 
 (defn- ^w/Widget drawer-builder [context]
-  (m/Drawer
-    .child
+  (f/widget
+    m/Drawer
     (w/ListView
       .padding w.EdgeInsets/zero
-      .children [(m/DrawerHeader
-                   .child (f/widget (pw/PlatformIconButton
-                                      .icon (-> context pw/PlatformIcons .-back w/Icon)
-                                      .onPressed (fn ^void []
-                                                   (.pop w/Navigator context)
-                                                   nil))))
+      .children [(f/widget m/DrawerHeader
+                           (pw/PlatformIconButton
+                             .icon (-> context pw/PlatformIcons .-back w/Icon)
+                             .onPressed (fn ^void []
+                                          (.pop w/Navigator context)
+                                          nil)))
                  (m/ListTile
                    .leading (f/widget
                               :let [^pw/PlatformThemeState platform-theme-state (.of pw/PlatformTheme context)]
