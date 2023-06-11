@@ -11,43 +11,48 @@
                       :app-name   "App name"
                       :dark-mode? true}))
 
+(defn- drawer-children [context]
+  [(f/widget
+     m/DrawerHeader
+     (pw/PlatformIconButton
+       .icon (-> context pw/PlatformIcons .-back w/Icon)
+       .onPressed (fn ^void []
+                    (.pop w/Navigator context)
+                    nil)))
+
+   (m/ListTile
+     .title (w/Text "Dark mode?")
+     .leading (f/widget
+                :let [^pw/PlatformThemeState
+                      theme-state (.of pw/PlatformTheme context)]
+                (pw/PlatformSwitch
+                  .value (.isDark theme-state)
+                  .onChanged (fn [value?] (.-themeMode!
+                                            theme-state
+                                            (if value?
+                                              m.ThemeMode/dark
+                                              m.ThemeMode/light))
+                               nil))))
+
+   (m/ListTile
+     .title (w/Text "Material Design?")
+     .leading (f/widget
+                :let [^pw/PlatformProviderState
+                      provider (.of pw/PlatformProvider context)]
+                (pw/PlatformSwitch
+                  .value (pw/isMaterial context)
+                  .onChanged (fn [value?]
+                               (if value?
+                                 (.changeToMaterialPlatform provider)
+                                 (.changeToCupertinoPlatform provider))
+                               nil))))])
+
 (defn- ^w/Widget drawer-builder [context]
   (f/widget
     m/Drawer
     (w/ListView
       .padding w.EdgeInsets/zero
-      .children [(f/widget
-                   m/DrawerHeader
-                   (pw/PlatformIconButton
-                     .icon (-> context pw/PlatformIcons .-back w/Icon)
-                     .onPressed (fn ^void [] (.pop w/Navigator context) nil)))
-
-                 (m/ListTile
-                   .title (w/Text "Dark mode?")
-                   .leading (f/widget
-                              :let [^pw/PlatformThemeState
-                                    theme-state (.of pw/PlatformTheme context)]
-                              (pw/PlatformSwitch
-                                .value (.isDark theme-state)
-                                .onChanged (fn [value?] (.-themeMode!
-                                                          theme-state
-                                                          (if value?
-                                                            m.ThemeMode/dark
-                                                            m.ThemeMode/light))
-                                             nil))))
-
-                 (m/ListTile
-                   .title (w/Text "Material Design?")
-                   .leading (f/widget
-                              :let [^pw/PlatformProviderState
-                                    provider (.of pw/PlatformProvider context)]
-                              (pw/PlatformSwitch
-                                .value (pw/isMaterial context)
-                                .onChanged (fn [value?]
-                                             (if value?
-                                               (.changeToMaterialPlatform provider)
-                                               (.changeToCupertinoPlatform provider))
-                                             nil))))])))
+      .children (drawer-children context))))
 
 (defn- ^pw/PlatformAppBar app-bar-builder
   [context _]
@@ -137,7 +142,8 @@
                    .materialLightTheme (-> m/ThemeData .light)
                    .materialDarkTheme (-> m/ThemeData .dark)
                    .cupertinoLightTheme (m/MaterialBasedCupertinoThemeData
-                                          .materialTheme (-> m/ThemeData .light))
+                                          .materialTheme (-> m/ThemeData
+                                                             .light))
                    .cupertinoDarkTheme cupertino-dark-theme
                    .onThemeModeChanged (fn [theme]
                                          (swap! state assoc :dark-mode?
