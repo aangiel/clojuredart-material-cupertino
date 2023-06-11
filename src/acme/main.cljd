@@ -16,49 +16,52 @@
     m/Drawer
     (w/ListView
       .padding w.EdgeInsets/zero
-      .children [(f/widget m/DrawerHeader
-                           (pw/PlatformIconButton
-                             .icon (-> context pw/PlatformIcons .-back w/Icon)
-                             .onPressed (fn ^void []
-                                          (.pop w/Navigator context)
-                                          nil)))
-                 (m/ListTile
-                   .leading (f/widget
-                              :let [^pw/PlatformThemeState platform-theme-state (.of pw/PlatformTheme context)]
-                              (pw/PlatformSwitch
-                                .value (.isDark platform-theme-state)
-                                .onChanged (fn [value?] (.-themeMode!
-                                                          platform-theme-state
-                                                          (if value? m.ThemeMode/dark m.ThemeMode/light))
-                                             nil)))
-                   .title (w/Text "Dark mode?"))
-                 (m/ListTile
-                   .leading (f/widget
-                              :let [^pw/PlatformProviderState platform-provider (.of pw/PlatformProvider context)]
-                              (pw/PlatformSwitch
-                                .value (pw/isMaterial context)
-                                .onChanged (fn [value?]
-                                             (if value?
-                                               (.changeToMaterialPlatform platform-provider)
-                                               (.changeToCupertinoPlatform platform-provider))
-                                             nil)))
-                   .title (w/Text "Material Design?"))])))
+      .children
+      [(f/widget m/DrawerHeader
+                 (pw/PlatformIconButton
+                   .icon (-> context pw/PlatformIcons .-back w/Icon)
+                   .onPressed (fn ^void [] (.pop w/Navigator context) nil)))
+
+       (m/ListTile
+         .leading (f/widget
+                    :let [^pw/PlatformThemeState platform-theme-state (.of pw/PlatformTheme context)]
+                    (pw/PlatformSwitch
+                      .value (.isDark platform-theme-state)
+                      .onChanged (fn [value?] (.-themeMode!
+                                                platform-theme-state
+                                                (if value? m.ThemeMode/dark m.ThemeMode/light))
+                                   nil)))
+         .title (w/Text "Dark mode?"))
+
+       (m/ListTile
+         .leading
+         (f/widget
+           :let [^pw/PlatformProviderState platform-provider (.of pw/PlatformProvider context)]
+           (pw/PlatformSwitch
+             .value (pw/isMaterial context)
+             .onChanged (fn [value?]
+                          (if value?
+                            (.changeToMaterialPlatform platform-provider)
+                            (.changeToCupertinoPlatform platform-provider))
+                          nil)))
+         .title (w/Text "Material Design?"))])))
 
 (defn- ^pw/PlatformAppBar app-bar-builder
   [context _]
   (pw/PlatformAppBar
     .title (m/Text (:app-title @state))
-    .cupertino (fn [_ __]
-                 (pw/CupertinoNavigationBarData
-                   .leading
-                   (pw/PlatformIconButton
-                     .onPressed (fn ^void []
-                                  (.push w/Navigator context
-                                         (pw/platformPageRoute
-                                           .context context
-                                           .builder drawer-builder))
-                                  nil)
-                     .cupertinoIcon (-> context pw/PlatformIcons .-dehaze w/Icon))))))
+    .cupertino
+    (fn [_ __]
+      (pw/CupertinoNavigationBarData
+        .leading
+        (pw/PlatformIconButton
+          .onPressed (fn ^void []
+                       (.push w/Navigator context
+                              (pw/platformPageRoute
+                                .context context
+                                .builder drawer-builder))
+                       nil)
+          .cupertinoIcon (-> context pw/PlatformIcons .-dehaze w/Icon))))))
 
 (defn- ^w/Widget body-builder
   [_ _]
@@ -84,27 +87,29 @@
 (def ^:private cupertino-dark-theme
   (m/MaterialBasedCupertinoThemeData
     .materialTheme
-    (.copyWith (.dark m/ThemeData)
-               .cupertinoOverrideTheme
-               (c/CupertinoThemeData
-                 .brightness d.Brightness/dark
-                 .barBackgroundColor (.-barBackgroundColor darkDefaultCupertinoTheme)
-                 .textTheme
-                 (c/CupertinoTextThemeData
-                   .navActionTextStyle
-                   (-> darkDefaultCupertinoTheme .-textTheme .-navActionTextStyle
-                       (.copyWith .color (d/Color 0xF0F9F9F9)))
+    (.copyWith
+      (.dark m/ThemeData)
+      .cupertinoOverrideTheme
+      (c/CupertinoThemeData
+        .brightness d.Brightness/dark
+        .barBackgroundColor (.-barBackgroundColor darkDefaultCupertinoTheme)
+        .textTheme
+        (c/CupertinoTextThemeData
+          .navActionTextStyle
+          (-> darkDefaultCupertinoTheme .-textTheme .-navActionTextStyle
+              (.copyWith .color (d/Color 0xF0F9F9F9)))
 
-                   .navLargeTitleTextStyle
-                   (-> darkDefaultCupertinoTheme .-textTheme .-navLargeTitleTextStyle
-                       (.copyWith .color (d/Color 0xF0F9F9F9))))))))
+          .navLargeTitleTextStyle
+          (-> darkDefaultCupertinoTheme .-textTheme .-navLargeTitleTextStyle
+              (.copyWith .color (d/Color 0xF0F9F9F9))))))))
 
 (defn- home [context]
   (pw/PlatformTabScaffold
-    .material (fn [context _] (pw/MaterialTabScaffoldData
-                                .drawer (drawer-builder context)
-                                .floatingActionButton (pw/PlatformIconButton
-                                                        .icon (-> context pw/PlatformIcons .-addCircled w/Icon))))
+    .material
+    (fn [context _]
+      (pw/MaterialTabScaffoldData
+        .drawer (drawer-builder context)
+        .floatingActionButton (pw/PlatformIconButton .icon (-> context pw/PlatformIcons .-addCircled w/Icon))))
     .tabController (pw/PlatformTabController)
     .items (navigation-bar-items context)
     .appBarBuilder app-bar-builder
