@@ -139,8 +139,10 @@
                    .themeMode (if (:dark-mode? @state)
                                 m.ThemeMode/dark
                                 m.ThemeMode/light)
-                   .materialLightTheme (-> m/ThemeData .light)
-                   .materialDarkTheme (-> m/ThemeData .dark)
+                   .materialLightTheme (.copyWith (-> m/ThemeData .light)
+                                                  .useMaterial3 false)
+                   .materialDarkTheme (.copyWith (-> m/ThemeData .dark)
+                                                 .useMaterial3 false)
                    .cupertinoLightTheme (m/MaterialBasedCupertinoThemeData
                                           .materialTheme (-> m/ThemeData
                                                              .light))

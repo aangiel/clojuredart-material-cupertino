@@ -1,0 +1,8 @@
+(ns acme.main-test
+  (:require [acme.main :as m]
+            ["package:flutter/material.dart" :as mat]
+            ["package:test/test.dart" :as t]))
+
+(defn main []
+  (t/test "should test"
+          (fn [] (t/expect (:theme @m/state) mat.ThemeMode/dark))))
