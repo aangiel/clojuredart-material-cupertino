@@ -16,43 +16,42 @@
      m/DrawerHeader
      (pw/PlatformIconButton
        .icon (-> context pw/PlatformIcons .-back w/Icon)
-       .onPressed (fn ^void []
+       .onPressed (fn []
                     (.pop w/Navigator context)
                     nil)))
 
-   (m/ListTile
-     .title (w/Text "Dark mode?")
-     .leading (f/widget
-                :let [^pw/PlatformThemeState
-                      theme-state (.of pw/PlatformTheme context)]
-                (pw/PlatformSwitch
-                  .value (.isDark theme-state)
-                  .onChanged (fn [value?] (.-themeMode!
-                                            theme-state
-                                            (if value?
-                                              m.ThemeMode/dark
-                                              m.ThemeMode/light))
-                               nil))))
+   (f/widget
+     (m/ListTile .title (w/Text "Dark mode?"))
+     .leading
+     :get {theme-state pw/PlatformTheme}
+     (pw/PlatformSwitch .value (.-isDark theme-state))
+     .onChanged (fn [value?]
+                  (.-themeMode!
+                    theme-state
+                    (if value?
+                      m/ThemeMode.dark
+                      m/ThemeMode.light))
+                  nil))
 
-   (m/ListTile
-     .title (w/Text "Material Design?")
-     .leading (f/widget
-                :let [^pw/PlatformProviderState
-                      provider (.of pw/PlatformProvider context)]
-                (pw/PlatformSwitch
-                  .value (pw/isMaterial context)
-                  .onChanged (fn [value?]
-                               (if value?
-                                 (.changeToMaterialPlatform provider)
-                                 (.changeToCupertinoPlatform provider))
-                               nil))))])
+   (f/widget
+     ;; binds to any name you want, here platform-provider
+     :get {platform-provider pw/PlatformProvider}
+     ;; binds to platform-provider ClassName would get class-name
+     #_#_:get [pw/PlatformProvider]
+     (m/ListTile .title (w/Text "Material Design?"))
+     .leading
+     (pw/PlatformSwitch .value (pw/isMaterial context))
+     .onChanged (fn [value?]
+                  (if value?
+                    (.changeToMaterialPlatform platform-provider)
+                    (.changeToCupertinoPlatform platform-provider))
+                  nil))])
 
 (defn- ^w/Widget drawer-builder [context]
   (f/widget
     m/Drawer
-    (w/ListView
-      .padding w.EdgeInsets/zero
-      .children (drawer-children context))))
+    (w/ListView .padding w/EdgeInsets.zero)
+    .children (drawer-children context)))
 
 (defn- ^pw/PlatformAppBar app-bar-builder
   [context _]
@@ -91,8 +90,9 @@
      .label "Error"
      .icon (-> context pw/PlatformIcons .-error w/Icon))])
 
-(def ^:private darkDefaultCupertinoTheme
-  (c/CupertinoThemeData .brightness d.Brightness/dark))
+(def ^:private ^c/CupertinoThemeData darkDefaultCupertinoTheme
+  (c/CupertinoThemeData .brightness d/Brightness.dark))
+
 
 (def ^:private cupertino-dark-theme
   (m/MaterialBasedCupertinoThemeData
@@ -101,20 +101,20 @@
       (.dark m/ThemeData)
       .cupertinoOverrideTheme
       (c/CupertinoThemeData
-        .brightness d.Brightness/dark
+        .brightness d/Brightness.dark
         .barBackgroundColor (.-barBackgroundColor darkDefaultCupertinoTheme)
         .textTheme (c/CupertinoTextThemeData
                      .navActionTextStyle (-> darkDefaultCupertinoTheme
-                                             .-textTheme
-                                             .-navActionTextStyle
-                                             (.copyWith
-                                               .color (d/Color 0xF0F9F9F9)))
+                                           .-textTheme
+                                           .-navActionTextStyle
+                                           (.copyWith
+                                             .color (d/Color 0xF0F9F9F9)))
 
                      .navLargeTitleTextStyle (-> darkDefaultCupertinoTheme
-                                                 .-textTheme
-                                                 .-navLargeTitleTextStyle
-                                                 (.copyWith
-                                                   .color (d/Color 0xF0F9F9F9))))))))
+                                               .-textTheme
+                                               .-navLargeTitleTextStyle
+                                               (.copyWith
+                                                 .color (d/Color 0xF0F9F9F9))))))))
 
 (defn- home [context]
   (pw/PlatformTabScaffold
@@ -137,8 +137,8 @@
       .builder (fn [_]
                  (pw/PlatformTheme
                    .themeMode (if (:dark-mode? @state)
-                                m.ThemeMode/dark
-                                m.ThemeMode/light)
+                                m/ThemeMode.dark
+                                m/ThemeMode.light)
                    .materialLightTheme (.copyWith (-> m/ThemeData .light)
                                                   .useMaterial3 false)
                    .materialDarkTheme (.copyWith (-> m/ThemeData .dark)
@@ -149,15 +149,12 @@
                    .cupertinoDarkTheme cupertino-dark-theme
                    .onThemeModeChanged (fn [theme]
                                          (swap! state assoc :dark-mode?
-                                                (if (= m.ThemeMode/dark theme)
-                                                  true
-                                                  false)))
+                                                (= m/ThemeMode.dark theme)))
                    .builder (fn [theme-context]
                               (pw/PlatformApp
                                 .title (:app-name @state)
                                 .home (home theme-context)
                                 .localizationsDelegates
-                                [m.DefaultMaterialLocalizations/delegate
-                                 m.DefaultWidgetsLocalizations/delegate
-                                 c.DefaultCupertinoLocalizations/delegate])))))))
-
+                                [m/DefaultMaterialLocalizations.delegate
+                                 m/DefaultWidgetsLocalizations.delegate
+                                 c/DefaultCupertinoLocalizations.delegate])))))))
